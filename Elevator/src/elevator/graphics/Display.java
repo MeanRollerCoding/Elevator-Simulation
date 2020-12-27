@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 
 import javax.swing.JFrame;
 
@@ -20,6 +22,9 @@ public class Display extends Canvas implements Runnable {
 	private JFrame frame;
 	private String title = "Elevator";
 	private boolean running = false;
+	
+	private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+	private int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 	
 	public Display() {
 		this.frame = new JFrame();
@@ -87,21 +92,24 @@ public class Display extends Canvas implements Runnable {
 			return;
 		}
 		
-		Graphics g = bs.getDrawGraphics();
+		ElevatorSimulationSystem.getInstance().render();
 		
-		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, WIDTH, HEIGHT);
+		for(int y = 0; y < HEIGHT; y++) {
+			for(int x = 0; x < WIDTH; x++) {
+				this.pixels[x + y * WIDTH] = ElevatorSimulationSystem.getInstance().getGraphicsManager().getScreenPixel(x, y);
+			}
+		}
+		
+		Graphics g = bs.getDrawGraphics();
+		g.drawImage(this.image, 0, 0, this.getWidth(), this.getHeight(), null);
 
-		ElevatorSimulationSystem.getInstance().render(g);
+		ElevatorSimulationSystem.getInstance().renderGraphics(g);
 		
 		g.dispose();
 		bs.show();
 	}
 	
 	public void update() {
-		WIDTH = this.getWidth();
-		HEIGHT = this.getHeight();
-		
 		ElevatorSimulationSystem.getInstance().update();
 	}
 

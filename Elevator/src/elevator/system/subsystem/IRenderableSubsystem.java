@@ -4,6 +4,8 @@ import java.awt.Graphics;
 
 public interface IRenderableSubsystem extends ISubsystem {
 
-	void render(Graphics g);
+	void render();
+	
+	void renderGraphics(Graphics g);
 	
 }

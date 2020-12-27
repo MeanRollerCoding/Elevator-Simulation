@@ -25,10 +25,13 @@ public class SimulationManager implements ISimulationManager {
 	}
 	
 	@Override
-	public void render(Graphics g) {
-		g.setColor(Color.RED);
-		g.setFont(new Font("Verdana", 1, 40));
-		g.drawString("Hello world!", 100, 100);
+	public void render() {
+
+	}
+	
+	@Override
+	public void renderGraphics(Graphics g) {
+
 	}
 
 }
