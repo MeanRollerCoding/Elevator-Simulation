@@ -1,6 +1,6 @@
 package elevator.entity;
 
-import elevator.graphics.Display;
+import elevator.graphics.canvas.Display;
 import elevator.graphics.sprites.ISprite;
 import elevator.system.ElevatorSimulationSystem;
 

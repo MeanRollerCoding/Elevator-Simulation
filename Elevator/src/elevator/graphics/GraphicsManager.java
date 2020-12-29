@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.util.HashMap;
 import java.util.Map;
 
+import elevator.graphics.canvas.Display;
 import elevator.graphics.sprites.ISprite;
 import elevator.graphics.sprites.Sprite;
 import elevator.graphics.sprites.SpriteSheet;
@@ -76,7 +77,7 @@ public class GraphicsManager implements IGraphicsManager {
 	}
 	
 	private void createSpriteSheets() {
-		this.sheetMap.put(SpriteSheets.TestSheet, new SpriteSheet("/textures/penguin.png", 40));
+		this.sheetMap.put(SpriteSheets.TestSheet, new SpriteSheet("/textures/penguin.png", 80));
 	}
 
 }

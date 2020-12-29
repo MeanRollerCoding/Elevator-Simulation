@@ -1,6 +1,6 @@
 package elevator.main;
 
-import elevator.graphics.Display;
+import elevator.graphics.canvas.Display;
 import elevator.system.ElevatorSimulationSystem;
 import elevator.system.instance.IElevatorSimulationInstance;
 

@@ -1,4 +1,4 @@
-package elevator.graphics;
+package elevator.graphics.canvas;
 
 import java.awt.Canvas;
 import java.awt.Color;

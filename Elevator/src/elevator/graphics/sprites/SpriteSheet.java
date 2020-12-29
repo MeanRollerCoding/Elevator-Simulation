@@ -19,9 +19,9 @@ public class SpriteSheet {
 	}
 	
 	public void loadSprite(int x, int y, int size, int[] pixels) {
-		for(int a = 0; a < this.SIZE; a++) {
-			for(int b = 0; b < this.SIZE; b++) {
-				pixels[b + a * this.SIZE] = this.pixels[(x + b) + (y + a) * this.SIZE];
+		for(int a = 0; a < size; a++) {
+			for(int b = 0; b < size; b++) {
+				pixels[b + a * size] = this.pixels[(x + b) + (y + a) * this.SIZE];
 			}
 		}
 	}
