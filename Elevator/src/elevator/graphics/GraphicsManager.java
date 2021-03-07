@@ -78,6 +78,7 @@ public class GraphicsManager implements IGraphicsManager {
 	
 	private void createSpriteSheets() {
 		this.sheetMap.put(SpriteSheets.TestSheet, new SpriteSheet("/textures/penguin.png", 80));
+		this.sheetMap.put(SpriteSheets.Elevator, new SpriteSheet("/textures/elevator.png", 200));
 	}
 
 }

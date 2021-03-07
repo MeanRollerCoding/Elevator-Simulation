@@ -1,4 +1,4 @@
-package elevator.entity;
+package elevator.entity.entities;
 
 import elevator.entity.animation.AnimatedEntity;
 import elevator.entity.animation.ISpriteAnimation;

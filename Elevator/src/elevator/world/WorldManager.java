@@ -6,16 +6,19 @@ import java.util.List;
 
 import elevator.entity.Entity;
 import elevator.entity.IEntity;
-import elevator.entity.TestEntity;
 import elevator.entity.animation.CycleType;
 import elevator.entity.animation.ISpriteAnimation;
 import elevator.entity.animation.SpriteAnimation;
+import elevator.entity.entities.Elevator;
+import elevator.entity.entities.ElevatorAlgorithm;
+import elevator.entity.entities.TestEntity;
 import elevator.graphics.sprites.SpriteSheets;
 import elevator.system.ElevatorSimulationSystem;
 
 public class WorldManager implements IWorldManager {
 
 	private List<IEntity> entities;
+	private Elevator elevator;
 	
 	@Override
 	public void init() {
@@ -33,6 +36,8 @@ public class WorldManager implements IWorldManager {
 		for(IEntity entity : this.entities) {
 			entity.update();
 		}
+		
+		this.testElevator();
 	}
 
 	@Override
@@ -48,14 +53,19 @@ public class WorldManager implements IWorldManager {
 	}
 	
 	private void createBaseEntities() {
-		ISpriteAnimation testAnim = new SpriteAnimation(
-				3,
-				CycleType.BounceBack,
-				ElevatorSimulationSystem.getInstance().getGraphicsManager().loadSprite(SpriteSheets.TestSheet, 0, 0, 40),
-				ElevatorSimulationSystem.getInstance().getGraphicsManager().loadSprite(SpriteSheets.TestSheet, 1, 0, 40),
-				ElevatorSimulationSystem.getInstance().getGraphicsManager().loadSprite(SpriteSheets.TestSheet, 0, 1, 40),
-				ElevatorSimulationSystem.getInstance().getGraphicsManager().loadSprite(SpriteSheets.TestSheet, 1, 1, 40));
-		this.entities.add(new TestEntity(testAnim));
+		this.elevator = new Elevator(ElevatorAlgorithm.Basic, 3, 300, 500);
+		this.entities.add(this.elevator);
+	}
+	
+	private void testElevator() {
+		int currentFloor = this.elevator.getCurrentFloor();
+		int maxFloor = this.elevator.getNumberOfFloors();
+		if(currentFloor < maxFloor) {
+			this.elevator.addFloorRequest(maxFloor);
+		}
+		else {
+			this.elevator.addFloorRequest(1);
+		}
 	}
 	
 

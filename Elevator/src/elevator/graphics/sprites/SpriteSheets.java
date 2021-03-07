@@ -2,6 +2,7 @@ package elevator.graphics.sprites;
 
 public enum SpriteSheets {
 	
-	TestSheet
+	TestSheet,
+	Elevator
 
 }
