@@ -1,4 +1,4 @@
-package elevator.entity.entities;
+package elevator.entity.entities.elevator;
 
 public class ElevatorShaft extends ElevatorCell {
 

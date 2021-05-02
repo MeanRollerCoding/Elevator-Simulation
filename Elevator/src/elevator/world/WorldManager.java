@@ -9,9 +9,10 @@ import elevator.entity.IEntity;
 import elevator.entity.animation.CycleType;
 import elevator.entity.animation.ISpriteAnimation;
 import elevator.entity.animation.SpriteAnimation;
-import elevator.entity.entities.Elevator;
-import elevator.entity.entities.ElevatorAlgorithm;
 import elevator.entity.entities.TestEntity;
+import elevator.entity.entities.elevator.DirectionRequestType;
+import elevator.entity.entities.elevator.Elevator;
+import elevator.entity.entities.elevator.ElevatorAlgorithm;
 import elevator.graphics.sprites.SpriteSheets;
 import elevator.system.ElevatorSimulationSystem;
 
@@ -61,10 +62,10 @@ public class WorldManager implements IWorldManager {
 		int currentFloor = this.elevator.getCurrentFloor();
 		int maxFloor = this.elevator.getNumberOfFloors();
 		if(currentFloor < maxFloor) {
-			this.elevator.addFloorRequest(maxFloor);
+			this.elevator.addFloorRequest(maxFloor, DirectionRequestType.Down);
 		}
 		else {
-			this.elevator.addFloorRequest(1);
+			this.elevator.addFloorRequest(1, DirectionRequestType.Up);
 		}
 	}
 	

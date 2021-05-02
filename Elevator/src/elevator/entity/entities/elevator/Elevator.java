@@ -1,4 +1,4 @@
-package elevator.entity.entities;
+package elevator.entity.entities.elevator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,19 +16,24 @@ public class Elevator extends Entity {
 	private ElevatorAlgorithm algorithm;
 	private List<ElevatorCell> cells;
 	private ElevatorMarker marker;
-	private boolean[] floorRequests;
-	private boolean isMoving, isMovingUp, isMovingDown, doorsOpen;
+	private boolean[] upFloorRequests, downFloorRequests;
+	private boolean doorsOpen;
+	private ElevatorState elevatorState;
+	private DirectionRequestType requestType;
 	
 	public Elevator(ElevatorAlgorithm algorithm, int numberOfFloors, int x, int y) {
 		super(null);
 		this.cells = new ArrayList<ElevatorCell>();
-		this.floorRequests = new boolean[numberOfFloors];
+		this.upFloorRequests = new boolean[numberOfFloors];
+		this.downFloorRequests = new boolean[numberOfFloors];
 		this.x = x;
 		this.y = y;
 		this.numberOfFloors = numberOfFloors;
 		this.algorithm = algorithm;
 		this.currentCell = 0;
 		this.currentFloor = 1;
+		this.elevatorState = ElevatorState.Idle;
+		this.requestType = DirectionRequestType.None;
 		this.createElevator();
 	}
 	
@@ -50,9 +55,17 @@ public class Elevator extends Entity {
 		}
 	}
 	
-	public void addFloorRequest(int floor) {
+	public void addFloorRequest(int floor, DirectionRequestType type) {
 		if(floor >= 1 && floor <= this.numberOfFloors) {
-			this.floorRequests[floor - 1] = true;
+			if(type == DirectionRequestType.Up) {
+				this.upFloorRequests[floor - 1] = true;
+			}
+			else if(type == DirectionRequestType.Down) {
+				this.downFloorRequests[floor - 1] = true;
+			}
+			
+			ElevatorDoors doors = this.findDoors(floor);
+			doors.pushButton(type);
 		}
 	}
 	
@@ -64,23 +77,38 @@ public class Elevator extends Entity {
 		return this.currentFloor;
 	}
 	
+	private ElevatorDoors findDoors(int floor) {
+		for(int i = 0; i < this.cells.size(); i++) {
+			ElevatorCell cell = this.cells.get(i);
+			if(cell instanceof ElevatorDoors) {
+				ElevatorDoors doors = (ElevatorDoors) cell;
+				if(doors.getFloorNumber() == floor) {
+					return doors;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 	private void updateBasic() {
-		if(this.isMoving) {
+		if(this.elevatorState != ElevatorState.Idle) {
 			this.moveToFloor();
 		}
 		else if(this.doorsOpen) {
 			this.handleOpenDoors();
 		}
-		else if(this.floorRequests[this.currentFloor - 1]) {
+		else if(this.upFloorRequests[this.currentFloor - 1] || this.downFloorRequests[this.currentFloor - 1]) {
 			this.doorCount = 0;
 			this.doorsOpen = true;
 		}
 		else {
 			for(int i = 0; i < this.numberOfFloors; i++) {
-				if(this.floorRequests[i]) {
+				if(this.upFloorRequests[i] || this.downFloorRequests[i]) {
 					this.targetFloor = i + 1;
-					this.isMoving = true;
 					this.moveCount = 0;
+					this.elevatorState = this.targetFloor > this.currentFloor ? ElevatorState.MovingUp : ElevatorState.MovingDown;
+					this.requestType = this.upFloorRequests[i] ? DirectionRequestType.Up : DirectionRequestType.Down;
 				}
 			}
 		}
@@ -96,27 +124,27 @@ public class Elevator extends Entity {
 			this.doorCount = 0;
 			doors.close();
 			this.doorsOpen = false;
-			this.floorRequests[this.currentFloor - 1] = false;
+			doors.clearButton(this.requestType);
+			if(this.requestType == DirectionRequestType.Up) {
+				this.upFloorRequests[this.currentFloor - 1] = false;
+			}
+			else if(this.requestType == DirectionRequestType.Down) {
+				this.downFloorRequests[this.currentFloor - 1] = false;
+			}
 		}
 	}
 	
 	private void moveToFloor() {
 		if(this.currentFloor == this.targetFloor) {
-			this.isMoving = false;
-			this.isMovingUp = false;
-			this.isMovingDown = false;
+			this.elevatorState = ElevatorState.Idle;
 			this.updateMarker();
 		}
 		else {
-			if(!this.isMovingUp && !this.isMovingDown) {
-				this.isMovingUp = this.currentFloor < this.targetFloor;
-				this.isMovingDown = this.currentFloor > this.targetFloor;
-			}
 			this.moveCount++;
 			this.updateMarker();
 			if(this.moveCount >= ElevatorCellMoveTime) {
 				this.moveCount = 0;
-				this.currentCell += this.isMovingDown ? -1 : 1;
+				this.currentCell += this.elevatorState == ElevatorState.MovingDown ? -1 : 1;
 				int cellFloorNumber = this.cells.get(this.currentCell).getFloorNumber();
 				if(cellFloorNumber != -1) {
 					this.currentFloor = cellFloorNumber;
@@ -127,7 +155,7 @@ public class Elevator extends Entity {
 	
 	private void updateMarker() {
 		int y = this.y - this.currentCell * ElevatorCell.Size;
-		y += (int) (this.moveCount * 1.0 / ElevatorCellMoveTime * ElevatorCell.Size * (this.isMovingUp ? -1 : 1));
+		y += (int) (this.moveCount * 1.0 / ElevatorCellMoveTime * ElevatorCell.Size * (this.elevatorState == ElevatorState.MovingUp ? -1 : 1));
 		this.marker.setPosition(this.x, y);
 	}
 	
@@ -138,7 +166,8 @@ public class Elevator extends Entity {
 			if(i == 0) {
 				this.marker = new ElevatorMarker(this.x, this.y);
 			}
-			this.floorRequests[i] = false;
+			this.upFloorRequests[i] = false;
+			this.downFloorRequests[i] = false;
 		}
 	}
 
