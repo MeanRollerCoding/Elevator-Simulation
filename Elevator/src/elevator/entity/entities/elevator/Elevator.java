@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import elevator.entity.Entity;
+import elevator.input.ClickType;
+import elevator.input.Mouse;
 
 public class Elevator extends Entity {
 
@@ -20,14 +22,16 @@ public class Elevator extends Entity {
 	private boolean doorsOpen;
 	private ElevatorState elevatorState;
 	private DirectionRequestType requestType;
+	private Mouse mouse;
 	
-	public Elevator(ElevatorAlgorithm algorithm, int numberOfFloors, int x, int y) {
+	public Elevator(ElevatorAlgorithm algorithm, int numberOfFloors, int x, int y, Mouse mouse) {
 		super(null);
 		this.cells = new ArrayList<ElevatorCell>();
 		this.upFloorRequests = new boolean[numberOfFloors];
 		this.downFloorRequests = new boolean[numberOfFloors];
 		this.x = x;
 		this.y = y;
+		this.mouse = mouse;
 		this.numberOfFloors = numberOfFloors;
 		this.algorithm = algorithm;
 		this.currentCell = 0;
@@ -53,6 +57,8 @@ public class Elevator extends Entity {
 			this.updateBasic();
 			break;
 		}
+		
+		this.checkForButtonClick();
 	}
 	
 	public void addFloorRequest(int floor, DirectionRequestType type) {
@@ -101,6 +107,7 @@ public class Elevator extends Entity {
 		else if(this.upFloorRequests[this.currentFloor - 1] || this.downFloorRequests[this.currentFloor - 1]) {
 			this.doorCount = 0;
 			this.doorsOpen = true;
+			this.requestType = this.upFloorRequests[this.currentFloor - 1] ? DirectionRequestType.Up : DirectionRequestType.Down;
 		}
 		else {
 			for(int i = 0; i < this.numberOfFloors; i++) {
@@ -109,6 +116,7 @@ public class Elevator extends Entity {
 					this.moveCount = 0;
 					this.elevatorState = this.targetFloor > this.currentFloor ? ElevatorState.MovingUp : ElevatorState.MovingDown;
 					this.requestType = this.upFloorRequests[i] ? DirectionRequestType.Up : DirectionRequestType.Down;
+					break;
 				}
 			}
 		}
@@ -118,12 +126,6 @@ public class Elevator extends Entity {
 		ElevatorDoors doors = (ElevatorDoors) (this.cells.get(this.currentCell));
 		if(!doors.areOpen()) {
 			doors.open();
-		}
-		this.doorCount++;
-		if(this.doorCount >= ElevatorFloorWaitTime) {
-			this.doorCount = 0;
-			doors.close();
-			this.doorsOpen = false;
 			doors.clearButton(this.requestType);
 			if(this.requestType == DirectionRequestType.Up) {
 				this.upFloorRequests[this.currentFloor - 1] = false;
@@ -131,6 +133,12 @@ public class Elevator extends Entity {
 			else if(this.requestType == DirectionRequestType.Down) {
 				this.downFloorRequests[this.currentFloor - 1] = false;
 			}
+		}
+		this.doorCount++;
+		if(this.doorCount >= ElevatorFloorWaitTime) {
+			this.doorCount = 0;
+			doors.close();
+			this.doorsOpen = false;
 		}
 	}
 	
@@ -168,6 +176,26 @@ public class Elevator extends Entity {
 			}
 			this.upFloorRequests[i] = false;
 			this.downFloorRequests[i] = false;
+		}
+	}
+	
+	private void checkForButtonClick() {
+		if(this.mouse.getButton(false) == ClickType.LeftClick) {
+			int mX = this.mouse.getX();
+			int mY = this.mouse.getY();
+			for(ElevatorCell cell : this.cells) {
+				if(cell instanceof ElevatorDoors) {
+					ElevatorDoors doors = (ElevatorDoors) cell;
+					if( mX >= doors.getX() + doors.getSize() && mX <= doors.getX() + doors.getSize() + doors.getButtonSize()) {
+						if(mY > doors.getY() && mY < doors.getY() + doors.getSize() / 2) {
+							this.addFloorRequest(doors.getFloorNumber(), DirectionRequestType.Up);
+						}
+						else if(mY > doors.getY() + doors.getSize() / 2 && mY < doors.getY() + doors.getSize()) {
+							this.addFloorRequest(doors.getFloorNumber(), DirectionRequestType.Down);
+						}
+					}
+				}
+			}
 		}
 	}
 

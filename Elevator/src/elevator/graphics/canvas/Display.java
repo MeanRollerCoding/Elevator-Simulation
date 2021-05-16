@@ -10,6 +10,7 @@ import java.awt.image.DataBufferInt;
 
 import javax.swing.JFrame;
 
+import elevator.input.Mouse;
 import elevator.system.ElevatorSimulationSystem;
 
 public class Display extends Canvas implements Runnable {
@@ -31,6 +32,10 @@ public class Display extends Canvas implements Runnable {
 		
 		Dimension size = new Dimension(WIDTH, HEIGHT);
 		this.setPreferredSize(size);
+		
+		Mouse mouse = ElevatorSimulationSystem.getInstance().getInputManager().getMouse();
+		this.addMouseListener(mouse);
+		this.addMouseMotionListener(mouse);
 	}
 	
 	public void init() {

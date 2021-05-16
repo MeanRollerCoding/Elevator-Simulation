@@ -6,10 +6,12 @@ import elevator.system.ElevatorSimulationSystem;
 
 public class ElevatorDoors extends ElevatorCell {
 
-	protected static final ISprite UpButtonOff = ElevatorSimulationSystem.getInstance().getGraphicsManager().loadSprite(SpriteSheets.Buttons, 0, 0, 25);
-	protected static final ISprite UpButtonOn = ElevatorSimulationSystem.getInstance().getGraphicsManager().loadSprite(SpriteSheets.Buttons, 1, 0, 25);
-	protected static final ISprite DownButtonOff = ElevatorSimulationSystem.getInstance().getGraphicsManager().loadSprite(SpriteSheets.Buttons, 0, 1, 25);
-	protected static final ISprite DownButtonOn = ElevatorSimulationSystem.getInstance().getGraphicsManager().loadSprite(SpriteSheets.Buttons, 1, 1, 25);
+	protected static final int ButtonSize = 25;
+	
+	protected static final ISprite UpButtonOff = ElevatorSimulationSystem.getInstance().getGraphicsManager().loadSprite(SpriteSheets.Buttons, 0, 0, ButtonSize);
+	protected static final ISprite UpButtonOn = ElevatorSimulationSystem.getInstance().getGraphicsManager().loadSprite(SpriteSheets.Buttons, 1, 0, ButtonSize);
+	protected static final ISprite DownButtonOff = ElevatorSimulationSystem.getInstance().getGraphicsManager().loadSprite(SpriteSheets.Buttons, 0, 1, ButtonSize);
+	protected static final ISprite DownButtonOn = ElevatorSimulationSystem.getInstance().getGraphicsManager().loadSprite(SpriteSheets.Buttons, 1, 1, ButtonSize);
 	
 	private int floorNumber;
 	private boolean areOpen, upRequest, downRequest;
@@ -66,6 +68,22 @@ public class ElevatorDoors extends ElevatorCell {
 	
 	public boolean areOpen() {
 		return this.areOpen;
+	}
+	
+	public int getX() {
+		return this.x;
+	}
+	
+	public int getY() {
+		return this.y;
+	}
+	
+	public int getSize() {
+		return Size;
+	}
+	
+	public int getButtonSize() {
+		return ButtonSize;
 	}
 
 }

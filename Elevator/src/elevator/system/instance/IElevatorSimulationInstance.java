@@ -3,6 +3,7 @@ package elevator.system.instance;
 import java.awt.Graphics;
 
 import elevator.graphics.IGraphicsManager;
+import elevator.input.IInputManager;
 import elevator.simulation.ISimulationManager;
 import elevator.world.IWorldManager;
 
@@ -19,6 +20,8 @@ public interface IElevatorSimulationInstance {
 	void render();
 	
 	void renderGraphics(Graphics g);
+	
+	IInputManager getInputManager();
 	
 	ISimulationManager getSimulationManager();
 	

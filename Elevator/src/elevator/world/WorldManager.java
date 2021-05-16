@@ -38,7 +38,7 @@ public class WorldManager implements IWorldManager {
 			entity.update();
 		}
 		
-		this.testElevator();
+		// this.testElevator();
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class WorldManager implements IWorldManager {
 	}
 	
 	private void createBaseEntities() {
-		this.elevator = new Elevator(ElevatorAlgorithm.Basic, 3, 300, 500);
+		this.elevator = new Elevator(ElevatorAlgorithm.Basic, 3, 300, 500, ElevatorSimulationSystem.getInstance().getInputManager().getMouse());
 		this.entities.add(this.elevator);
 	}
 	
