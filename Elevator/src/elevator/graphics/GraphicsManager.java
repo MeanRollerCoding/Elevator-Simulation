@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import elevator.graphics.canvas.Display;
+import elevator.graphics.sprites.FillSprite;
+import elevator.graphics.sprites.IFillSprite;
 import elevator.graphics.sprites.ISprite;
 import elevator.graphics.sprites.Sprite;
 import elevator.graphics.sprites.SpriteSheet;
@@ -56,6 +58,11 @@ public class GraphicsManager implements IGraphicsManager {
 	public ISprite loadSprite(SpriteSheets spriteSheet, int x, int y, int size) {
 		return new Sprite(this.sheetMap.get(spriteSheet), x, y, size);
 	}
+	
+	@Override
+	public IFillSprite loadFillSprite(SpriteSheets spriteSheet, int x, int y, int size, int oldColor, int... newColors) {
+		return new FillSprite(this.sheetMap.get(spriteSheet), x, y, size, oldColor, newColors);
+	}
 
 	@Override
 	public void renderSprite(int xp, int yp, ISprite sprite) {
@@ -72,6 +79,25 @@ public class GraphicsManager implements IGraphicsManager {
 	}
 
 	@Override
+	public void renderFillSprite(int xp, int yp, IFillSprite sprite, int index) {
+		int size = sprite.getSize();
+		int oldColor = sprite.getOldColor();
+		int newColor = sprite.getNewColor(index);
+		for(int y = 0; y < size; y++) {
+			int ya = y + yp;
+			for(int x = 0; x < size; x++) {
+				int xa = x + xp;
+				if(xa < 0 || xa > this.width || ya < 0 || ya > this.height) continue;
+				int col = sprite.getPixel(x, y);
+				if(col != 0xFFFF00FF) {
+					if(col == oldColor) col = newColor;
+					this.pixels[xa + ya * this.width] = col;
+				}
+			}
+		}
+	}
+
+	@Override
 	public int getScreenPixel(int x, int y) {
 		return this.pixels[x + y * this.width];
 	}
@@ -81,5 +107,6 @@ public class GraphicsManager implements IGraphicsManager {
 		this.sheetMap.put(SpriteSheets.Elevator, new SpriteSheet("/textures/elevator.png", 200));
 		this.sheetMap.put(SpriteSheets.Buttons, new SpriteSheet("/textures/buttons.png", 50));
 	}
+
 
 }
